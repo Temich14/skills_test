@@ -61,16 +61,6 @@ public class PersonService(IPersonRepository personRepository, IPersonMapper map
     {
         var persons = await _personRepository.GetAllPersons();
 
-        if (persons == null)
-        {
-            return Result<PersonDto[]>.Failure("Error while getting all persons");
-        }
-
-        if (!persons.Any())
-        {
-            return Result<PersonDto[]>.Failure("Person not found");
-        }
-
         var personDtos = persons
             .Select(p => _mapper.MapToPersonDto(p));
 

@@ -56,7 +56,7 @@ public class PersonRepository(AppDbContext context) : IPersonRepository
         return person;
     }
 
-    public async Task<Person[]?> GetAllPersons()
+    public async Task<Person[]> GetAllPersons()
     {
         return await _context.Persons.ToArrayAsync();
     }
