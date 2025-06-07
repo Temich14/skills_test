@@ -5,6 +5,6 @@ namespace skills_test.Application.Mapper;
 
 public interface IPersonMapper
 {
-    PersonDto MapToPersonDto(Person person);
-    Person MapToPerson(PersonDto personDto);
+    PersonResponseDto MapToPersonDto(Person person);
+    Person MapToPerson(PersonRequestDto personDto);
 }

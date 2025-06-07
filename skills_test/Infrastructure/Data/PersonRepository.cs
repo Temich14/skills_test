@@ -5,10 +5,9 @@ using skills_test.Domain.Ports;
 
 namespace skills_test.Infrastructure.Data;
 
-public class PersonRepository(AppDbContext context) : IPersonRepository
+public sealed class PersonRepository(AppDbContext context) : IPersonRepository
 {
     private readonly AppDbContext _context = context;
-
 
     public async Task<Person> CreatePerson(Person person)
     {
@@ -21,7 +20,9 @@ public class PersonRepository(AppDbContext context) : IPersonRepository
 
     public async Task<Person?> UpdatePerson(Person person)
     {
-        var personToUpdate = await _context.Persons.FindAsync(person);
+        var personToUpdate = await _context.Persons
+            .Include(p => p.Skill)
+            .FirstOrDefaultAsync(p => p.Id == person.Id);
         if (personToUpdate == null)
         {
             return null;
@@ -29,6 +30,7 @@ public class PersonRepository(AppDbContext context) : IPersonRepository
 
         personToUpdate.Name = person.Name;
         personToUpdate.DisplayName = person.DisplayName;
+        personToUpdate.Skill.Clear();
         personToUpdate.Skill = person.Skill;
 
         await _context.SaveChangesAsync();
@@ -52,12 +54,13 @@ public class PersonRepository(AppDbContext context) : IPersonRepository
 
     public async Task<Person?> GetPerson(long id)
     {
-        var person = await _context.Persons.FindAsync(id);
-        return person;
+        return await _context.Persons
+            .Include(p => p.Skill)
+            .FirstOrDefaultAsync(p => p.Id == id);
     }
 
-    public async Task<Person[]> GetAllPersons()
+    public async Task<List<Person>> GetAllPersons()
     {
-        return await _context.Persons.ToArrayAsync();
+        return await _context.Persons.Include(p => p.Skill).ToListAsync();
     }
 }

@@ -9,5 +9,5 @@ public interface IPersonRepository
     Task<Person?> UpdatePerson(Person person);
     Task<bool> DeletePerson(long id);
     Task<Person?> GetPerson(long id);
-    Task<Person[]> GetAllPersons();
+    Task<List<Person>> GetAllPersons();
 }

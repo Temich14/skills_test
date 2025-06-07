@@ -1,7 +1,19 @@
 namespace skills_test.Domain.Models;
 
-public class Skill(string name, byte level)
+public class Skill
 {
-    public string Name { get; set; } = name;
-    public byte Level { get; set; } = level;
+    public Skill()
+    {
+    }
+
+    public Skill(long id, string name, byte level)
+    {
+        Id = id;
+        Name = name;
+        Level = level;
+    }
+
+    public long Id { get; set; }
+    public string Name { get; set; }
+    public byte Level { get; set; }
 }
