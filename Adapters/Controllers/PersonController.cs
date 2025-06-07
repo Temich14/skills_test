@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using skills_test.Adapters.Controllers.Middlewares;
 using skills_test.Application.DTO;
+using skills_test.Core;
 using skills_test.Domain.Ports;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace skills_test.Adapters.Controllers;
 
@@ -16,10 +18,12 @@ public sealed class PersonController : ControllerBase
         _personService = personService;
     }
 
-    /// <summary>
-    /// Создать нового пользователя.
-    /// </summary>
     [HttpPost("/persons")]
+    [SwaggerOperation(
+        Summary = "Создать нового пользователя",
+        Description =
+            "Создаёт нового пользователя на основе переданных данных. Имя и отображаемое имя должны быть не пустыми, а уровень навыков должен быть от 1 до 10 включительно."
+    )]
     [ProducesResponseType(typeof(PersonResponseDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
@@ -29,6 +33,11 @@ public sealed class PersonController : ControllerBase
 
         if (!result.IsSuccess)
         {
+            if (result.Error == null)
+            {
+                throw new ErrorNullException();
+            }
+
             return BadRequest(new ErrorResponse(result.Error));
         }
 
@@ -42,10 +51,12 @@ public sealed class PersonController : ControllerBase
         return CreatedAtAction(nameof(GetPerson), new { id = createdPerson.Id }, createdPerson);
     }
 
-    /// <summary>
-    /// Обновить пользователя по ID.
-    /// </summary>
     [HttpPut("/persons/{id:long}")]
+    [SwaggerOperation(
+        Summary = "Обновить данные пользователя",
+        Description =
+            "Полностью обновляет данные существующего пользователя. Имя и отображаемое имя долждны быть не пустыми, а уровень навыков должен быть от 1 до 10 включительно."
+    )]
     [ProducesResponseType(typeof(PersonResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
@@ -55,6 +66,11 @@ public sealed class PersonController : ControllerBase
 
         if (!result.IsSuccess)
         {
+            if (result.Error == null)
+            {
+                throw new ErrorNullException();
+            }
+
             return NotFound(new ErrorResponse(result.Error));
         }
 
@@ -65,6 +81,10 @@ public sealed class PersonController : ControllerBase
     /// Удалить пользователя по ID.
     /// </summary>
     [HttpDelete("/persons/{id:long}")]
+    [SwaggerOperation(
+        Summary = "Удаляет пользователя",
+        Description = "Удаляет пользователя если он существует"
+    )]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
@@ -74,6 +94,11 @@ public sealed class PersonController : ControllerBase
 
         if (!result.IsSuccess)
         {
+            if (result.Error == null)
+            {
+                throw new ErrorNullException();
+            }
+
             return NotFound(new ErrorResponse(result.Error));
         }
 
@@ -84,6 +109,10 @@ public sealed class PersonController : ControllerBase
     /// Получить список всех пользователей.
     /// </summary>
     [HttpGet("/persons")]
+    [SwaggerOperation(
+        Summary = "Получить всех пользователей",
+        Description = "получает всех пользователей с их навыками"
+    )]
     [ProducesResponseType(typeof(IEnumerable<PersonResponseDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
@@ -103,6 +132,10 @@ public sealed class PersonController : ControllerBase
     /// Получить пользователя по ID.
     /// </summary>
     [HttpGet("/persons/{id:long}")]
+    [SwaggerOperation(
+        Summary = "Получить пользователя",
+        Description = "получает информацию о существующем пользователе"
+    )]
     [ProducesResponseType(typeof(PersonResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
@@ -112,6 +145,11 @@ public sealed class PersonController : ControllerBase
 
         if (!result.IsSuccess)
         {
+            if (result.Error == null)
+            {
+                throw new ErrorNullException();
+            }
+
             return NotFound(new ErrorResponse(result.Error));
         }
 
