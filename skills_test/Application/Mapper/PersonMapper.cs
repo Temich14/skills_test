@@ -5,13 +5,16 @@ namespace skills_test.Application.Mapper;
 
 public class PersonMapper : IPersonMapper
 {
-    public PersonDto MapToPersonDto(Person person)
+    public PersonResponseDto MapToPersonDto(Person person)
     {
-        return new PersonDto(person.Id, person.Name, person.DisplayName, person.Skill);
+        var skillsDto = person.Skill.Select(s => new SkillDto(s.Name, s.Level)).ToList();
+
+        return new PersonResponseDto(person.Id, person.Name, person.DisplayName, skillsDto);
     }
 
-    public Person MapToPerson(PersonDto personDto)
+    public Person MapToPerson(PersonRequestDto personDto)
     {
-        return new Person(personDto.Id, personDto.Name, personDto.DisplayName, personDto.Skill);
+        var skills = personDto.Skill.Select(s => new Skill(0, s.Name, s.Level)).ToList();
+        return new Person(0, personDto.Name, personDto.DisplayName, skills);
     }
 }

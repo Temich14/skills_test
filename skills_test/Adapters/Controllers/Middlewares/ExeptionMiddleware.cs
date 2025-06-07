@@ -2,7 +2,7 @@ using System.Text.Json;
 
 namespace skills_test.Adapters.Controllers.Middlewares;
 
-public class ExeptionMiddleware
+public sealed class ExeptionMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<ExeptionMiddleware> _logger;

@@ -6,12 +6,12 @@ namespace skills_test.Domain.Ports;
 
 public interface IPersonService
 {
-    Task<Result<PersonDto>> CreatePersonAsync(PersonDto person);
+    Task<Result<PersonResponseDto>> CreatePersonAsync(PersonRequestDto personDto);
 
-    Task<Result<PersonDto>> UpdatePersonAsync(PersonDto person);
+    Task<Result<PersonResponseDto>> UpdatePersonAsync(long id, PersonRequestDto personDto);
 
     Task<Result<bool>> DeletePersonAsync(long id);
 
-    Task<Result<PersonDto>> GetPersonByIdAsync(long id);
-    Task<Result<PersonDto[]>> GetAllPersonsAsync();
+    Task<Result<PersonResponseDto>> GetPersonByIdAsync(long id);
+    Task<Result<List<PersonResponseDto>>> GetAllPersonsAsync();
 }
