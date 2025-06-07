@@ -5,65 +5,79 @@ using skills_test.Domain.Ports;
 
 namespace skills_test.Application.Services;
 
-public class PersonService(IPersonRepository personRepository, IPersonMapper mapper) : IPersonService
+public class PersonService(
+    IPersonRepository personRepository,
+    IPersonMapper mapper,
+    ILogger<PersonService> logger) : IPersonService
 {
     private readonly IPersonRepository _personRepository = personRepository;
     private readonly IPersonMapper _mapper = mapper;
-
+    private readonly ILogger<PersonService> _logger = logger;
 
     public async Task<Result<PersonDto>> CreatePersonAsync(PersonDto personDto)
     {
+        _logger.LogInformation("Creating new person");
         var person = _mapper.MapToPerson(personDto);
-
         var newPerson = await _personRepository.CreatePerson(person);
+        _logger.LogDebug("Person created with ID: {Id}", newPerson.Id);
 
         return Result<PersonDto>.Success(_mapper.MapToPersonDto(newPerson));
     }
 
     public async Task<Result<PersonDto>> UpdatePersonAsync(PersonDto personDto)
     {
+        _logger.LogInformation("Updating person with ID: {Id}", personDto.Id);
         var person = _mapper.MapToPerson(personDto);
+        var updatedPerson = await _personRepository.UpdatePerson(person);
 
-        var updatePerson = await _personRepository.UpdatePerson(person);
-
-        if (updatePerson == null)
+        if (updatedPerson == null)
         {
+            _logger.LogWarning("Person with ID {Id} not found for update", personDto.Id);
             return Result<PersonDto>.Failure("Person not found");
         }
 
-        return Result<PersonDto>.Success(_mapper.MapToPersonDto(updatePerson));
+        _logger.LogDebug("Person with ID {Id} updated successfully", personDto.Id);
+        return Result<PersonDto>.Success(_mapper.MapToPersonDto(updatedPerson));
     }
 
     public async Task<Result<bool>> DeletePersonAsync(long id)
     {
+        _logger.LogInformation("Deleting person with ID: {Id}", id);
         var isDeleted = await _personRepository.DeletePerson(id);
+
         if (!isDeleted)
         {
+            _logger.LogWarning("Person with ID {Id} not found", id);
             return Result<bool>.Failure("Person not found");
         }
 
+        _logger.LogDebug("Person with ID {Id} deleted", id);
         return Result<bool>.Success(true);
     }
 
     public async Task<Result<PersonDto>> GetPersonByIdAsync(long id)
     {
+        _logger.LogInformation("Getting person with ID: {Id}", id);
         var person = await _personRepository.GetPerson(id);
 
         if (person == null)
         {
+            _logger.LogWarning("Person with ID {Id} not found", id);
             return Result<PersonDto>.Failure("Person not found");
         }
 
+        _logger.LogDebug("Got Person with ID {Id}", id);
         return Result<PersonDto>.Success(_mapper.MapToPersonDto(person));
     }
 
     public async Task<Result<PersonDto[]>> GetAllPersonsAsync()
     {
+        _logger.LogInformation("Getting all persons");
         var persons = await _personRepository.GetAllPersons();
 
-        var personDtos = persons
-            .Select(p => _mapper.MapToPersonDto(p));
+        var personDtos = persons.Select(_mapper.MapToPersonDto).ToArray();
+        _logger.LogDebug("Got {Count} persons", personDtos.Length);
 
-        return Result<PersonDto[]>.Success(personDtos.ToArray());
+        return Result<PersonDto[]>.Success(personDtos);
     }
 }

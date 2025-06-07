@@ -8,8 +8,7 @@ namespace skills_test.Infrastructure.Data;
 public class PersonRepository(AppDbContext context) : IPersonRepository
 {
     private readonly AppDbContext _context = context;
-
-
+    
     public async Task<Person> CreatePerson(Person person)
     {
         await _context.Persons.AddAsync(person);
